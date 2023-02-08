@@ -1,7 +1,6 @@
 package ua.ithillel.hillelprospring.entity;
 
 import lombok.*;
-import org.springframework.stereotype.Component;
 
 @Setter
 @Getter
@@ -9,13 +8,13 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @ToString
 
-@Component
 public class User {
 
-    private Integer id;
+    private int id;
     private String name;
     private String surname;
     private Integer age;
     private String email;
+    private Long phone;
 
 }

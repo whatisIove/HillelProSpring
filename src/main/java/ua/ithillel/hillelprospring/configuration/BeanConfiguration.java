@@ -22,7 +22,7 @@ public class BeanConfiguration {
     @Bean
     @Scope("prototype")
     public User getUserForAdministration() {
-        return new User(0, "Admin", "Admin", 2023, "admin@gmail.com");
+        return new User(0, "Admin", "Admin", 2023, "admin@gmail.com", 12L);
     }
 
     @Bean
