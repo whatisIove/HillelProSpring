@@ -3,7 +3,6 @@ package ua.ithillel.hillelprospring.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.ithillel.hillelprospring.entity.User;
-import ua.ithillel.hillelprospring.exception.UserException;
 import ua.ithillel.hillelprospring.repository.UserRepository;
 
 import java.util.List;
@@ -11,21 +10,25 @@ import java.util.List;
 @Service
 public class UserService {
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public List<User> getAll() {
-        return userRepository.getAll();
+        return userRepository.findAll();
     }
 
-    public User getById(final int id) {
-        return userRepository.getById(id);
+    public User getById(final Integer id) {
+        return userRepository.findById(id).orElseThrow();
     }
 
-    public User getUserByEmailAndPhone(final String email, final Long phone) throws UserException {
+    public User getUserByEmailAndPhone(final String email, final Long phone) {
         return userRepository.getUserByEmailAndPhone(email, phone);
     }
 
-    public User getByAgeOrEmailOrPhone(final Integer age, final String email, final Long phone) throws UserException {
+    public User getByAgeOrEmailOrPhone(final Integer age, final String email, final Long phone) {
         return userRepository.getByAgeOrEmailOrPhone(age, email, phone);
     }
 
@@ -33,12 +36,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User update(final Integer id, final User user) {
-        return userRepository.update(id, user);
+    public User update(final User user) {
+        return userRepository.save(user);
     }
 
     public Integer delete(final Integer id) {
-        userRepository.delete(id);
+        userRepository.deleteById(id);
         return id;
+    }
+
+    public Integer updateNameAndSurnameById(final Integer id, final String name, final String surname) {
+        return userRepository.updateNameAndSurnameById(id, name, surname);
     }
 }

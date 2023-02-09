@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ua.ithillel.hillelprospring.controller.dto.IntegerDto;
 import ua.ithillel.hillelprospring.controller.dto.UserDto;
 import ua.ithillel.hillelprospring.controller.mapper.UserMapper;
-import ua.ithillel.hillelprospring.entity.User;
-import ua.ithillel.hillelprospring.exception.UserException;
 import ua.ithillel.hillelprospring.service.UserService;
 
 import java.util.List;
@@ -17,11 +15,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
     private final UserService userService;
     private final UserMapper userMapper;
 
     @Autowired
-    public UserController(final UserService userService, UserMapper userMapper) {
+    public UserController(final UserService userService, final UserMapper userMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
     }
@@ -41,18 +40,18 @@ public class UserController {
         return ResponseEntity.ok(userMapper.toDto(userService.getById(id)));
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/filter.v1")
     public ResponseEntity<UserDto> getByEmailAndPhone(
             @RequestParam final String email,
-            @RequestParam final Long phone) throws UserException {
+            @RequestParam final Long phone) {
         return ResponseEntity.ok(userMapper.toDto(userService.getUserByEmailAndPhone(email, phone)));
     }
 
-    @GetMapping("/filterSecond")
+    @GetMapping("/filter.v2")
     public ResponseEntity<UserDto> getByAgeOrEmailOrPhone(
             @RequestParam final Integer age,
             @RequestParam(required = false) final String email,
-            @RequestParam(required = false) final Long phone) throws UserException {
+            @RequestParam(required = false) final Long phone) {
         return ResponseEntity.ok(userMapper.toDto(userService.getByAgeOrEmailOrPhone(age, email, phone)));
     }
 
@@ -66,11 +65,24 @@ public class UserController {
         );
     }
 
-    @PutMapping("/{id}")
-    public User update(@PathVariable final Integer id, @RequestBody final User user) {
-        return userService.update(id, user);
+    @PutMapping()
+    public ResponseEntity<UserDto> update(@RequestBody final UserDto userDto) {
+        return new ResponseEntity<>(
+                userMapper.toDto(
+                        userService.update(userMapper.toEntity(userDto))),
+                HttpStatus.ACCEPTED);
     }
 
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<IntegerDto> updateNameAndSurnameById(@PathVariable final Integer id,
+                                                               @RequestParam final String name,
+                                                               @RequestParam final String surname) {
+        {
+            return new ResponseEntity<>(
+                    new IntegerDto(userService.updateNameAndSurnameById(id, name, surname)),
+                    HttpStatus.OK);
+        }
+    }
     @DeleteMapping
     public IntegerDto delete(@RequestParam final Integer id) {
         return new IntegerDto(userService.delete(id));
